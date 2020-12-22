@@ -6,6 +6,10 @@
 
 #IncludeRegexTransform: 
 
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/cmake-build-debug/TwoFish.hpp
+array
+-
+
 /cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/main.cpp
 iostream
 -
@@ -13,4 +17,6 @@ string
 -
 array
 -
+cmake-build-debug/TwoFish.hpp
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/cmake-build-debug/TwoFish.hpp
 

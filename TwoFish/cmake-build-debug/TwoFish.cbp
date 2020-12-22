@@ -83,7 +83,7 @@
 		<Unit filename="/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/TwoFish.cpp">
 			<Option target="TwoFish"/>
 		</Unit>
-		<Unit filename="/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/cmake-build-debug/TwoFish.h">
+		<Unit filename="/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/cmake-build-debug/TwoFish.hpp">
 			<Option target="TwoFish"/>
 		</Unit>
 		<Unit filename="/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/main.cpp">
