@@ -17,39 +17,39 @@ typedef unsigned char BYTE;
 namespace tf {
     class TwoFish {
     public:
-        TwoFish(BYTE *key);
+        explicit TwoFish(BYTE *key);
 
-        TwoFish(char *key);
+        explicit TwoFish(const char *key);
 
         ~TwoFish();
 
         BYTE *twoFishCompilation(BYTE *plain);
 
-        void decrypt();
+       //  void decrypt();
 
     private:
-        UINT *NtoP(BYTE *plain);
+        //static UINT *NtoP(const BYTE *plain);
 
-        void keyShedule(BYTE *global_k);
+        void keyShedule(const BYTE *global_k);
 
-        UINT gFunc(UINT inputWord, UINT *inputWordArray, short arraySize);
+        static UINT gFunc(UINT inputWord, const UINT *inputWordArray, short arraySize);
 
         std::array<UINT, 2> fFunk(UINT R0, UINT R1, UINT round);
 
-        BYTE qBlock(BYTE block, bool type);
+        static BYTE qBlock(BYTE block, int type);
 
         std::array<UINT, 2> PHT(UINT T0, UINT T1, UINT round);
 
-        BYTE ROR4(BYTE x);
+        static BYTE ROR4(BYTE x);
 
-        UINT ROL(UINT x, BYTE shift);
+        static UINT ROL(UINT x, BYTE shift);
 
-        UINT ROR(UINT x, BYTE shift);
+        static UINT ROR(UINT x, BYTE shift);
 
         // static fields
-        UINT keys[40];
-        short k;
-        UINT *Sbox;
+        UINT keys[40]{};
+        short k{};
+        UINT *Sbox{};
     };
 }
 #endif //TWOFISH_TWOFISH_HPP

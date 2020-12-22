@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "hicpp-signed-bitwise"
 //
 // Created by MI on 16/12/2020
 //
@@ -11,9 +13,9 @@ TwoFish::TwoFish(BYTE *key){
     TwoFish::keyShedule(key);
 }
 
-TwoFish::TwoFish(char *key){
+TwoFish::TwoFish(const char *key){
     BYTE *u_key = new BYTE[size_t(key)];
-    for (int i=0;i < size_t (key); i++){
+    for (size_t i=0;i < sizeof(key); i++){
         u_key[i] = (BYTE) key[i];
     }
     TwoFish::keyShedule(u_key);
@@ -22,11 +24,11 @@ TwoFish::TwoFish(char *key){
 TwoFish::~TwoFish(){
     delete [] TwoFish::Sbox;
 }
-
+/**
 void TwoFish::decrypt(){
 
 };
-
+*/
 
 BYTE *TwoFish::twoFishCompilation(BYTE *plain) {
     /**
@@ -36,7 +38,12 @@ BYTE *TwoFish::twoFishCompilation(BYTE *plain) {
              * F - function [16 rounds]
              * outputWhitening
     * result: chipher-text*/
-    UINT *P = TwoFish::NtoP(plain);
+    UINT P0, P1, P2, P3;
+    P0 = (plain[0] << 24) + (plain[1] << 16) + (plain[2] << 8) + plain[3];
+    P1 = (plain[4] << 24) + (plain[5] << 16) + (plain[6] << 8) + plain[7];
+    P2 = (plain[8] << 24) + (plain[9] << 16) + (plain[10] << 8) + plain[11];
+    P3 = (plain[12] << 24) + (plain[13] << 16) + (plain[14] << 8) + plain[15];
+    UINT P[4] = {P0, P1, P2, P3};
 
 /** I W */
     for(int i = 0; i < 4; i++){
@@ -47,7 +54,10 @@ BYTE *TwoFish::twoFishCompilation(BYTE *plain) {
         std::array temp_pp = fFunk(P[0], P[1], i);
         temp_pp[0] = ROR(P[2]^temp_pp[0] , 1);
         temp_pp[1] = ROL(P[3], 1)^temp_pp[1];
-        P[0], P[1], P[2], P[3] = P[2], P[3], temp_pp[0], temp_pp[1];
+        P[0] = P[2];
+        P[1] = P[3];
+        P[2] = temp_pp[0];
+        P[3] = temp_pp[1];
     }
 /** O W */
     for(int i = 0; i < 4; i++){
@@ -62,11 +72,11 @@ BYTE *TwoFish::twoFishCompilation(BYTE *plain) {
     return plain;
 }
 
-UINT *TwoFish::NtoP(BYTE *plain) {
-    /**
+/**UINT *TwoFish::NtoP(const BYTE *plain) {
+
              * Get 128-bit N, and divide it into 4 32-bit words p0, p1, p2, p3
              * also using for divide 128-bit key K to 32-bit word k0, k1, k2, k3
-    * */
+    * *
     UINT P0, P1, P2, P3;
     P0 = (plain[0] << 24) + (plain[1] << 16) + (plain[2] << 8) + plain[3];
     P1 = (plain[4] << 24) + (plain[5] << 16) + (plain[6] << 8) + plain[7];
@@ -77,9 +87,9 @@ UINT *TwoFish::NtoP(BYTE *plain) {
 
     return P;
 }
+*/
 
-
-void TwoFish::keyShedule(BYTE *global_k){
+void TwoFish::keyShedule(const BYTE *global_k){
     /**
      * done only for 128-bit.
      * Input: Global Key 128-bit as BYTE *
@@ -87,10 +97,15 @@ void TwoFish::keyShedule(BYTE *global_k){
      * Fulfill keys[40] keys, Sbox keys, Whitening I|O keys
              * ?
     */
-    char *temporal_k = new char[128];
+    BYTE temporal_k[128];
+
+    for(int i = 0; i < 128; i++){
+        temporal_k[i] = ( i < sizeof(global_k) ) ? global_k[i] : 0;
+    }
     TwoFish::k = 2;
 
     BYTE RS[4][8] = {
+
             {0x01, 0xA4, 0x55, 0x87, 0x5A, 0x58, 0xDB, 0x9E},
             {0xA4, 0x56, 0x82, 0xF3, 0x1E, 0xC6, 0x68, 0xE5},
             {0x02, 0xA1, 0xFC, 0xC1, 0x47, 0xAE, 0x3D, 0x19},
@@ -150,6 +165,7 @@ std::array<UINT, 2> TwoFish::fFunk(UINT R0, UINT R1, UINT round) {
              * Addition mod 2**32: -- PHT --
              * Repeat for 16 time in Full Compilation
     * */
+
     R0 = TwoFish::gFunc(R0, TwoFish::Sbox, TwoFish::k);
     R1 = TwoFish::gFunc(TwoFish::ROL(R1, 8 ), TwoFish::Sbox, TwoFish::k);
     std::array<UINT, 2> T = TwoFish::PHT(R0, R1, round); //include addition mod 2**32 (actually, not realized// soon)
@@ -158,7 +174,7 @@ std::array<UINT, 2> TwoFish::fFunk(UINT R0, UINT R1, UINT round) {
 }
 
 
-UINT TwoFish::gFunc(UINT R, UINT *sbox, short arraySize) {
+UINT TwoFish::gFunc(UINT R, const UINT *sbox, short arraySize) {
     /**
              * First composite part of F - function. Heart of TwoFish
              * Input: 32-bit word
@@ -216,7 +232,7 @@ UINT TwoFish::gFunc(UINT R, UINT *sbox, short arraySize) {
     return H;
 }
 
-BYTE TwoFish::qBlock(BYTE block, bool type) { //may be troubles with BOOL --> char
+BYTE TwoFish::qBlock(BYTE block, int type) { //may be troubles with BOOL --> char
     /**
              * Main part of S-boxes
              * Input: 8 bit, bool type - (False if q0-type, True if q1-type)
@@ -304,3 +320,5 @@ BYTE TwoFish::ROR4(BYTE x){
 
 
 
+
+#pragma clang diagnostic pop
