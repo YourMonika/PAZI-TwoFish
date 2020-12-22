@@ -123,6 +123,33 @@ TwoFish/fast:
 	$(MAKE) -f CMakeFiles/TwoFish.dir/build.make CMakeFiles/TwoFish.dir/build
 .PHONY : TwoFish/fast
 
+TwoFish.o: TwoFish.cpp.o
+
+.PHONY : TwoFish.o
+
+# target to build an object file
+TwoFish.cpp.o:
+	$(MAKE) -f CMakeFiles/TwoFish.dir/build.make CMakeFiles/TwoFish.dir/TwoFish.cpp.o
+.PHONY : TwoFish.cpp.o
+
+TwoFish.i: TwoFish.cpp.i
+
+.PHONY : TwoFish.i
+
+# target to preprocess a source file
+TwoFish.cpp.i:
+	$(MAKE) -f CMakeFiles/TwoFish.dir/build.make CMakeFiles/TwoFish.dir/TwoFish.cpp.i
+.PHONY : TwoFish.cpp.i
+
+TwoFish.s: TwoFish.cpp.s
+
+.PHONY : TwoFish.s
+
+# target to generate assembly for a file
+TwoFish.cpp.s:
+	$(MAKE) -f CMakeFiles/TwoFish.dir/build.make CMakeFiles/TwoFish.dir/TwoFish.cpp.s
+.PHONY : TwoFish.cpp.s
+
 main.o: main.cpp.o
 
 .PHONY : main.o
@@ -159,6 +186,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... TwoFish"
+	@echo "... TwoFish.o"
+	@echo "... TwoFish.i"
+	@echo "... TwoFish.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

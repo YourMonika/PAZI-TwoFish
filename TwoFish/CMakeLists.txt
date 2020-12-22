@@ -3,4 +3,4 @@ project(TwoFish)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(TwoFish main.cpp algorithms.hpp)
+add_executable(TwoFish main.cpp TwoFish.cpp cmake-build-debug/TwoFish.h)
