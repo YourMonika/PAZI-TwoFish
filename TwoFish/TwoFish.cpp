@@ -4,8 +4,8 @@
 
 #include <array>
 #include <utility>
-#include "TwoFish.h"
-#include "cmake-build-debug/TwoFish.h"
+#include "TwoFish.hpp"
+#include "cmake-build-debug/TwoFish.hpp"
 
 
 void encrypt(){
@@ -18,55 +18,63 @@ void decrypt(){
 
 
 void twoFishCompilation() {
-            /**
+    /**
              * input
              * ntop
              * inputWhitening
              * F - function [16 rounds]
              * outputWhitening
-             * result: chipher-text*/
+    * result: chipher-text*/
 }
 
 void TwoFish::NtoP() {
-            /**
+    /**
              * Get 128-bit N, and divide it into 4 32-bit words p0, p1, p2, p3
              * also using for divide 128-bit key K to 32-bit word k0, k1, k2, k3
-             * */
+    * */
 
 }
 
 void TwoFish::inputWhite(BYTE plain_unit, BYTE key_unit) {
-            /**
+    /**
              * XORing(^) p0, p1, p2, p3 with k0, k1, k2, k3 by pairs
              *output is result presented like set of four 32-bit words R0, R1, R2, R3
-             * */
+   * */
+
 
 }
 
-void TwoFish::fFunk() {
-            /**
+std::array<UINT, 2> TwoFish::fFunk(UINT R0, UINT R1, UINT round) {
+    /**
              * Body of TwoFish's rounds
              * contains R0, R1 words and num r(round)
              * Input: 32-bit R0, R1 ; Output: 32-bit F0, F1
              * G-step: R0 passed to g-function an yields T0. R1 ROLing8 (<<8) and passed to g-function to yield T1
-             * After goes PHT-block*/
+             * PHT: -- PHT --
+             * Addition mod 2**32: -- PHT --
+             * Repeat for 16 time in Full Compilation
+    * */
+    R0 = TwoFish::gFunc(R0, round);
+    R1 = TwoFish::ROL(R1, 8 );
+    R1 = TwoFish::gFunc(R1, round);
+    std::array<UINT, 2> T = TwoFish::PHT(UINT R0, UINT R1, UINT round); //include addition mod 2**32 (actually, not realized// soon)
+
 
 }
 
-void TwoFish::gFunc() {
-            /**
+UINT TwoFish::gFunc(UINT R, UINT round) {
+    /**
              * First composite part of F - function. Heart of TwoFish
              * Input: 32-bit word
              * Output: 32-bit word
              * Transformation of R0, R1 before PHT in a round
              * Input splits in four 8-bit words (four bytes). Each byte goes through key-dependent S-boxes.
              * [4] S-box; Input: 8 bits; Output: 8 bits;
-             * 4 results interpreted as vector[4] over GF(2**8), goes to MDS-box.*/
-
-
+    * 4 results interpreted as vector[4] over GF(2**8), goes to MDS-box.*/
+    return 0;
 }
 
-void TwoFish::SBox() {
+void TwoFish::SBox(UINT R, UINT round) {
             /**
              * Three 8-by-8-bit fixed permutations chosen from set of 2 possible: q0, q1
              * spaces between permutation - XOR with fixed keys from key KeyShedule S0, S1. Stays fixed due to decoding
@@ -76,14 +84,14 @@ void TwoFish::SBox() {
 }
 
 BYTE TwoFish::qBlock(BYTE block, bool type) { //may be troubles with BOOL --> char
-            /**
+    /**
              * Main part of S-boxes
              * Input: 8 bit, bool type - (False if q0-type, True if q1-type)
              * Output: 8 bit
              * Byte splits into two 4-bits nibble: a0, b0.
              * a1 = a0 XOR b0
              * b1 = a0 XOR (b0 >> 1) XOR (8 a0 mod 16)
-             * */
+    * */
     BYTE a0, a1, b0, b1;
     const BYTE qt[2][4][16] = {
             //q0
@@ -120,38 +128,34 @@ BYTE TwoFish::qBlock(BYTE block, bool type) { //may be troubles with BOOL --> ch
     return (16*b0 + a0);
 }
 
-void TwoFish::MDS() {
-            /**
-             * Input: array<8bit, 4> = four outputs after S-boxes
-             * Output: Multiplication result if MDS-matrix on vector in Galos Field(2**8)
-             * */
-}
-
-void TwoFish::combine(BYTE one, BYTE two) {
-            /**Simple function of 2 nums.
-             *Input:int a, b
-             *Output: int c
-             *c = a+b mod 2**32
-             * */
+void TwoFish::MDS(){
+    /**
+    * Input: array<8bit, 4> = four outputs after S-boxes
+    * Output: Multiplication result if MDS-matrix on vector in Galos Field(2**8)
+    * */
 
 }
 
-void TwoFish::PHT() {
-            /**
+std::array<UINT, 2> TwoFish::PHT(UINT T0, UINT T1, UINT round) {
+    /**
              * Second composite part of F - function.
              * Input: int a, b
              * a' = a + b mod 2**32
              * b' = a' + b mod 2**32
              * Output: a', b'
              * Output goes to combine with expanded key, from KeyShedule: K_2r+8 K_2r+9 // r - round number
-             * */
+    * */
+    T0 = (T0 + T1) % sizeof(UINT);
+    T1 = (T0 + T1) % sizeof(UINT);
 
+    T0 = (T0 + );
+    return std::array<UINT, 2> = {T0, T1};
 }
 
 void TwoFish::keyShedule(){
-            /**
+    /**
              * ?
-             */
+    */
 
 }
 
@@ -174,5 +178,7 @@ BYTE TwoFish::ROR4(BYTE x){
     /** Little function. Circular shift of UINT<4>. Used in SBOX - Q-permutation*/
     return (((x << 3) & 0xF) | ( (x & 0xF) >> 1));
 }
+
+
 
 
