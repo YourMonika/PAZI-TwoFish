@@ -66,7 +66,6 @@ BYTE *TwoFish::twoFishCompilation(BYTE *plain) {
 
     for (int i = 0; i < 16; i++){
         plain[i] = (P[(i/4)] >> (24 - 8*(i - 4* (i/4)))) & 0xFF;
-        std::cout << plain[i];
     }
 
     return plain;

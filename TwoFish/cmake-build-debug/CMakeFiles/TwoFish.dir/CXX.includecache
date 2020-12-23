@@ -15,8 +15,12 @@ iostream
 -
 string
 -
+cstring
+-
 array
 -
 cmake-build-debug/TwoFish.hpp
 /cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/cmake-build-debug/TwoFish.hpp
+fstream
+-
 
