@@ -13,14 +13,10 @@ array
 /cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/main.cpp
 iostream
 -
-string
--
 cstring
 -
-array
+fstream
 -
 cmake-build-debug/TwoFish.hpp
 /cygdrive/c/Users/MI/Documents/GitHub/PAZI/TwoFish/cmake-build-debug/TwoFish.hpp
-fstream
--
 
