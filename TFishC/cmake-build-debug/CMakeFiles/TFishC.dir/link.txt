@@ -1,0 +1,1 @@
+C:/cygwin64/bin/gcc.exe -g  -Wl,--enable-auto-import CMakeFiles/TFishC.dir/main.c.o CMakeFiles/TFishC.dir/T2F.c.o  -o TFishC.exe -Wl,--out-implib,libTFishC.dll.a -Wl,--major-image-version,0,--minor-image-version,0 

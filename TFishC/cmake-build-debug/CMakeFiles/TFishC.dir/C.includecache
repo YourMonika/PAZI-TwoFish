@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TFishC/T2F.c
+T2F.h
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TFishC/T2F.h
+assert.h
+-
+math.h
+-
+
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TFishC/T2F.h
+
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TFishC/main.c
+stdio.h
+-
+T2F.h
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/TFishC/T2F.h
+
