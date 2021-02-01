@@ -88,23 +88,23 @@ UINT gfMOD(UINT A, UINT modulus){
 
 //---------------------------------G-BLOCK---------------------------
 BYTE q(BYTE x, int op){
-    assert( (op == 0) || (op == 1));
+    assert((op == 0) || (op == 1));
     //splitting byte into two nibbles
-    BYTE a0 = x / 16;
-    BYTE b0 = x % 16;
+    BYTE a0 = x >> 4;
+    BYTE b0 = x & 0x0F;
 
     BYTE a1 = a0 ^ b0;
-    BYTE b1 = a0 ^ ROR4(b0) ^ ((8 * a0) % 16); //ROR4
+    BYTE b1 = a0 ^ ROR4(b0) ^ ((8 * a0) & 0x0F); //ROR4
 
     BYTE a2 = qt[op][0][a1];
     BYTE b2 = qt[op][1][b1];
 
     BYTE a3 = a2 ^ b2;
-    BYTE b3 = a2 ^ ROR4(b2) ^ ((8 * a2) % 16);  //ROR4
+    BYTE b3 = a2 ^ ROR4(b2) ^ ((8 * a2) & 0x0F);  //ROR4
     BYTE a4 = qt[op][2][a3];
     BYTE b4 = qt[op][3][b3];
 
-    return (16*b4 + a4);
+    return ((b4 << 4) + a4);
 }
 
 UINT g(UINT X, UINT S[2]){

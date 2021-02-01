@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/Curves/main.c
+stdio.h
+-
+structures.h
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/Curves/structures.h
+structures.c
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/Curves/structures.c
+sys/types.h
+-
+
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/Curves/structures.c
+structures.h
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/Curves/structures.h
+
+/cygdrive/c/Users/MI/Documents/GitHub/PAZI/Curves/structures.h
+gcrypt.h
+-
+
