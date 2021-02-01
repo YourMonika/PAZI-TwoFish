@@ -227,6 +227,9 @@ ProcessorCount_cmd_nproc:FILEPATH=/usr/bin/nproc.exe
 //Path to a program.
 ProcessorCount_cmd_sysctl:FILEPATH=ProcessorCount_cmd_sysctl-NOTFOUND
 
+//The directory containing a CMake configuration file for libgcrypt.
+libgcrypt_DIR:PATH=libgcrypt_DIR-NOTFOUND
+
 
 ########################
 # INTERNAL cache entries
