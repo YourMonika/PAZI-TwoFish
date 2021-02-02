@@ -134,22 +134,22 @@ point add_p(const point * Point1, const point * Point2){
 }
 
 point double_p(const point * Point){
-    gcry_mpi_t X = gcry_mpi_new(0);
-    gcry_mpi_t Y = gcry_mpi_new(0);
+    gcry_mpi_t X1 = gcry_mpi_new(0);
+    gcry_mpi_t Y1 = gcry_mpi_new(0);
 
-    X = Point->X;
-    Y = Point->Y;
+    X1 = Point->X;
+    Y1 = Point->Y;
     //    sqred(added(X, Y, p), tt, p);
     gcry_mpi_t B = gcry_mpi_new(0);
     gcry_mpi_t tempo = gcry_mpi_new(0);
-    gcry_mpi_addm(tempo, X, Y, p);
+    gcry_mpi_addm(tempo, X1, Y1, p);
     gcry_mpi_powm(B, tempo, two, p);
     //gcry_mpi_t C = sqred(X, tt, p);
     gcry_mpi_t C = gcry_mpi_new(0);
-    gcry_mpi_powm(C, X, two, p);
+    gcry_mpi_powm(C, X1, two, p);
     //gcry_mpi_t D = sqred(Y, tt, p);
     gcry_mpi_t D = gcry_mpi_new(0);
-    gcry_mpi_powm(D, Y, two, p);
+    gcry_mpi_powm(D, Y1, two, p);
     //gcry_mpi_t E = muled(a, C, p);
     gcry_mpi_t E = gcry_mpi_new(0);
     gcry_mpi_mulm(E, a, C, p);
@@ -174,7 +174,7 @@ point double_p(const point * Point){
     gcry_mpi_mulm(double_swing, two, F, p);
     gcry_mpi_subm(P3.Z, tempo, double_swing, p);
 
-    gcry_mpi_release(X);gcry_mpi_release(Y);gcry_mpi_release(B);gcry_mpi_release(C);
+    gcry_mpi_release(X1);gcry_mpi_release(Y1);gcry_mpi_release(B);gcry_mpi_release(C);
     gcry_mpi_release(D);gcry_mpi_release(E);gcry_mpi_release(F);gcry_mpi_release(tempo);
     gcry_mpi_release(double_swing);
 
@@ -265,12 +265,14 @@ void checkNeighbors(point Point){
 }
 
 void ifLinear(point * Point, gcry_mpi_t k1, gcry_mpi_t k2){
-    point tem1, tem2;
+    point tem1;
+    point tem2;
     init_p(&tem1);
     init_p(&tem2);
     tem1 = binaryMethod(Point, k1);
     tem2 = binaryMethod(Point, k2);
-    point Point1, Point2;
+    point Point1;
+    point Point2;
     init_p(&Point1);
     init_p(&Point2);
     Point1 = add_p(&tem1, &tem2);
