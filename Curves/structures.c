@@ -6,6 +6,7 @@
  */
 
 #include "structures.h"
+#include <gcrypt.h>
 /*
  *                                     PARAMETERS
  */
@@ -21,12 +22,6 @@ void release_p(point* P){
     gcry_mpi_release(P->Z);
 }
 
-void show_p(point* P, char A){
-    printf("\n Look at this POINT %c\n", A);
-    gcry_mpi_dump(P->X); printf("_");
-    gcry_mpi_dump(P->X); printf("_");
-    gcry_mpi_dump(P->X); printf("\n\n");
-}
 
 void set_params(){
     // Parameters been get from id-tc26-gost-3410-2012-256-paramSetA
@@ -40,12 +35,12 @@ void set_params(){
     u = gcry_mpi_new(0);
     v = gcry_mpi_new(0);
 
-    gcry_mpi_scan(&p, GCRYMPI_FMT_HEX, "115792089237316195423570985008687907853269984665640564039457584007913129639319", 0, &scanned);
+    gcry_mpi_scan(&p, GCRYMPI_FMT_HEX, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFD97", 0, &scanned);
     gcry_mpi_scan(&a, GCRYMPI_FMT_HEX, "1", 0, &scanned);
-    gcry_mpi_scan(&d, GCRYMPI_FMT_HEX, "2724414110474605931834268501164757645998726878473076809432604223414351675387", 0, &scanned);
-    gcry_mpi_scan(&q, GCRYMPI_FMT_HEX, "28948022309329048855892746252171976963338560298092253442512153408785530358887", 0, &scanned);
+    gcry_mpi_scan(&d, GCRYMPI_FMT_HEX, "605F6B7C183FA81578BC39CFAD518132B9DF62897009AF7E522C32D6DC7BFFB", 0, &scanned);
+    gcry_mpi_scan(&q, GCRYMPI_FMT_HEX, "400000000000000000000000000000000FD8CDDFC87B6635C115AF556C360C67", 0, &scanned);
     gcry_mpi_scan(&u, GCRYMPI_FMT_HEX, "D", 0, &scanned);
-    gcry_mpi_scan(&v, GCRYMPI_FMT_HEX, "43779144989398987843428779166090436406934195821915183574454224403186176950503", 0, &scanned);
+    gcry_mpi_scan(&v, GCRYMPI_FMT_HEX, "60CA1E32AA475B348488C38FAB07649CE7EF8DBE87F22E81F92B2592DBA300E7", 0, &scanned);
 
     two = gcry_mpi_new(0);
     one = gcry_mpi_new(0);
@@ -91,10 +86,17 @@ void transform_p(point * Point){
 }
 
 point add_p(const point * Point1, const point * Point2){
-    gcry_mpi_t X1 = gcry_mpi_copy(Point1->X);
-    gcry_mpi_t Y1 = gcry_mpi_copy(Point1->Y);
-    gcry_mpi_t X2 = gcry_mpi_copy(Point2->X);
-    gcry_mpi_t Y2 = gcry_mpi_copy(Point2->Y);
+    point Point3;
+    init_p(&Point3);
+
+    gcry_mpi_t X1 = gcry_mpi_new(0);
+    gcry_mpi_t Y1 = gcry_mpi_new(0);
+    gcry_mpi_t X2 = gcry_mpi_new(0);
+    gcry_mpi_t Y2 = gcry_mpi_new(0);
+    X1 = Point1->X;
+    Y1 = Point1->Y;
+    X2 = Point2->X;
+    Y2 = Point2->Y;
 
     gcry_mpi_t tem1 = gcry_mpi_new(0);
     gcry_mpi_mulm(tem1, X1, X2, p);
@@ -108,13 +110,10 @@ point add_p(const point * Point1, const point * Point2){
     gcry_mpi_t tem3 = gcry_mpi_new(0);
     gcry_mpi_mulm(tem3, tempo1, tem2, p);
 
-    point Point3;
-    init_p(&Point3);
-
     gcry_mpi_t tempo2 = gcry_mpi_new(0);
     // initialising Point3.X
     gcry_mpi_addm(tempo1, X1, Y1, p);
-    gcry_mpi_addm(tempo1, X2, Y2, p);
+    gcry_mpi_addm(tempo2, X2, Y2, p);
     gcry_mpi_mulm(tempo1, tempo1, tempo2, p);
     gcry_mpi_subm(tempo1, tempo1, tem1, p);
     gcry_mpi_subm(tempo1, tempo1, tem2, p);
@@ -134,11 +133,15 @@ point add_p(const point * Point1, const point * Point2){
 }
 
 point double_p(const point * Point){
+    point P3;
+    init_p(&P3);
     gcry_mpi_t X1 = gcry_mpi_new(0);
     gcry_mpi_t Y1 = gcry_mpi_new(0);
+    gcry_mpi_t Z1 = gcry_mpi_new(0);
 
     X1 = Point->X;
     Y1 = Point->Y;
+    Z1 = Point->Z;
     //    sqred(added(X, Y, p), tt, p);
     gcry_mpi_t B = gcry_mpi_new(0);
     gcry_mpi_t tempo = gcry_mpi_new(0);
@@ -156,45 +159,59 @@ point double_p(const point * Point){
     //gcry_mpi_t F = added(E, D, p);
     gcry_mpi_t F = gcry_mpi_new(0);
     gcry_mpi_addm(F, E, D, p);
-
-    point P3;
-    init_p(&P3);
-
-    gcry_mpi_t double_swing = gcry_mpi_new(0);
-    //gcry_mpi_t X3 = muled(subed(subed(B, C, p), D, p), subed(F, tt, p), p);
+    //gcry_mpi_t H = sqred(z1, tt, p);
+    gcry_mpi_t H = gcry_mpi_new(0);
+    gcry_mpi_powm(H, Z1, two, p);
+    //gcry_mpi_t J = subed(F, muled(two, H), p);
+    gcry_mpi_t J = gcry_mpi_new(0);
+    gcry_mpi_mulm(tempo, two, H, p);
+    gcry_mpi_subm(J, F, tempo, p);
+    //P3.X
     gcry_mpi_subm(tempo, B, C, p);
     gcry_mpi_subm(tempo, tempo, D, p);
-    gcry_mpi_subm(double_swing, F, two, p);
-    gcry_mpi_mulm(P3.X, tempo, double_swing, p);
-    //gcry_mpi_t Y3 = muled(F, muled(E, D, p), p);
-    gcry_mpi_mulm(tempo, E, D, p);
+    gcry_mpi_mulm(P3.X, tempo, J, p);
+    //P3.Y
+    gcry_mpi_subm(tempo, E, D, p);
     gcry_mpi_mulm(P3.Y, F, tempo, p);
-    //gcry_mpi_t Z3 = subed(sqred(F, tt, p), muled(tt, F, p), p);
-    gcry_mpi_powm(tempo, F, two, p);
-    gcry_mpi_mulm(double_swing, two, F, p);
-    gcry_mpi_subm(P3.Z, tempo, double_swing, p);
-
-    gcry_mpi_release(X1);gcry_mpi_release(Y1);gcry_mpi_release(B);gcry_mpi_release(C);
-    gcry_mpi_release(D);gcry_mpi_release(E);gcry_mpi_release(F);gcry_mpi_release(tempo);
-    gcry_mpi_release(double_swing);
+    //P3.Z
+    gcry_mpi_mulm(P3.Z, F, J, p);
 
     transform_p(&P3);
     return P3;
+}
 
- }
+point binaryMethod(const point* Point, gcry_mpi_t* I)
+{
+    point Q;
+    init_p(&Q);
 
-point binaryMethod(const point * Point, gcry_mpi_t I){
-    point Q = {zero, one, zero};
-    for(long i = gcry_mpi_get_nbits(I) - 1; i>=0; i--){
+    Q.X = zero;
+    Q.Y = one;
+    Q.Z = one;
+
+    for(unsigned long int i = gcry_mpi_get_nbits(*I) - 1; i>0; --i)
+    {
         Q = double_p(&Q);
-        if (gcry_mpi_test_bit(I, i)) Q = add_p(&Q, Point);
+        if (gcry_mpi_test_bit(*I, i) == 1)
+        {
+            Q = add_p(&Q, Point);
+        }
+
+        if (i == 1)
+        {
+            Q = double_p(&Q);
+            if(gcry_mpi_test_bit(*I, i-1) == 1)
+            {
+                Q = add_p(&Q, Point);
+            }
+
+        }
     }
     return Q;
 
 }
 
 void ifOnCurve(point * Point){
-    show_p(Point, '0');
     //gcry_mpi_t X2 = sqred(Point.X, tt, p);
     gcry_mpi_t X = gcry_mpi_new(0);
     gcry_mpi_powm(X, Point->X, two, p);
@@ -209,62 +226,58 @@ void ifOnCurve(point * Point){
     gcry_mpi_mulm(B, d, X, p);
     gcry_mpi_mulm(B, B, Y, p);
     gcry_mpi_addm(B, one, B, p);
-    if ((gcry_mpi_cmp(A, B) == 0) ){
-        printf("Test 1: +\n");
+    if (!(gcry_mpi_cmp(A, B) == 0) ){
+        printf("Test onCurve: +\n");
     }
     else{
-        printf("Test 1: -\n");
+        printf("Test onCurve: -\n");
     }
     gcry_mpi_release(X); gcry_mpi_release(Y);gcry_mpi_release(A);gcry_mpi_release(B);
 }
 
 void ifIdentity(point * Point){
-    show_p(Point, '0');
     if ((gcry_mpi_cmp(Point->X, zero) == 0) && (gcry_mpi_cmp(Point->Y, one) == 0) && (gcry_mpi_cmp(Point->Z, zero) == 0)) {
-        printf("Test 2: +\n");
+        printf("Test identity: +\n");
     }
     else{
-        printf("Test 2: -\n");
+        printf("Test identity: -\n");
     }
 }
 
 void checkNeighbors(point Point){
-    show_p(&Point, '1');
     point P1;
     init_p(&P1);
 
     gcry_mpi_t tempo = gcry_mpi_new(0);
     gcry_mpi_addm(tempo, q, one, p);
-    P1 = binaryMethod(&Point, tempo);
-            //binaryMethod(&Point, added(q, oo, p));
-    show_p(&P1, '2');
+    P1 = binaryMethod(&Point, &tempo);
+    //binaryMethod(&Point, added(q, oo, p));
     if ((gcry_mpi_cmp(P1.X, Point.X) == 0) && (gcry_mpi_cmp(P1.Y, Point.Y) == 0) && (gcry_mpi_cmp(P1.Z, Point.Z) == 0)){
-        printf("Test 3: +");
+        printf("Test neighbors. [ q+1 ] P = P: + __ ");
     }
     else{
-         printf("Test 3: -"); // [q+1]P==P
+        printf("Test neighbors. [ q+1 ] P = P: - __ "); // [q+1]P==P
     }
 
 
     gcry_mpi_subm(tempo, q, one, p);
-    P1 = binaryMethod(&Point, tempo);
-        //point P2 = binaryMethod(&Point, subed(q, oo, p));
+    P1 = binaryMethod(&Point, &tempo);
+    //point P2 = binaryMethod(&Point, subed(q, oo, p));
     gcry_mpi_t tempoX = gcry_mpi_new(0);
     gcry_mpi_t tempoZ = gcry_mpi_new(0);
     gcry_mpi_neg(tempoX, Point.X);
     gcry_mpi_neg(tempoZ, Point.Z);
     gcry_mpi_mod(tempoX, tempoX, p);
     gcry_mpi_mod(tempoZ, tempoZ, p);
-    show_p(&P1, '3');
     if ((gcry_mpi_cmp(P1.X, tempoX) == 0) && (gcry_mpi_cmp(P1.Y, Point.Y) == 0)  && (gcry_mpi_cmp(P1.Z, tempoZ) == 0) ) {
-        printf("+\n");
+        printf("[q-1] P = -P : +\n");
     }
     else {
-        printf("-\n");
+        printf("[q-1] P = -P : -\n");
     }// [q-1]P==-P
 }
 
-void ifLinear(point * Point, gcry_mpi_t k1, gcry_mpi_t k2){
+void ifLinear(point * Point, gcry_mpi_t * k1, gcry_mpi_t * k2){
     point tem1;
     point tem2;
     init_p(&tem1);
@@ -277,8 +290,37 @@ void ifLinear(point * Point, gcry_mpi_t k1, gcry_mpi_t k2){
     init_p(&Point2);
     Point1 = add_p(&tem1, &tem2);
     gcry_mpi_t tempo = gcry_mpi_new(0);
-    gcry_mpi_add(tempo, k1, k2);
-    Point2 = binaryMethod(Point, tempo);
-    show_p(Point, '1');show_p(&Point1, '2');show_p(&Point2, '3');
+    gcry_mpi_add(tempo, *k1, *k2);
+    Point2 = binaryMethod(Point, &tempo);
     (Point1.X == Point2.X && Point1.Y == Point2.Y && Point1.Z == Point2.Z) ? printf("Test 4 : +\n") : printf("Test 4 : -\n");
 }
+
+/*int main(){
+
+
+    set_params();
+
+    gcry_mpi_t rand1 = gcry_mpi_new(0);
+    printf("rand1\n\n");
+    gcry_mpi_dump(rand1);
+    gcry_mpi_randomize(rand1, 256, GCRY_STRONG_RANDOM);
+    printf("rand1");
+    gcry_mpi_t rand2 = gcry_mpi_new(0);
+    gcry_mpi_randomize(rand2, 256, GCRY_STRONG_RANDOM);
+    printf("rand2");
+    point f;
+    init_p(&f);
+    printf("init f");
+    f.X = u;
+    f.Y = v;
+    f.Z = one;
+    printf("init f");
+    point k;
+    init_p(&k);
+    printf("init K");
+    k = binaryMethod(&f, &rand1); // Random values for better accuracy
+    printf("binary");
+
+
+
+}*/
