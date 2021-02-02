@@ -21,10 +21,10 @@ void release_p(point* P){
     gcry_mpi_release(P->Z);
 }
 
-void show_p(point* P, char A[2]){
-    printf("\n Look at this POINT %c", A[1]);
-    gcry_mpi_dump(P->X); printf("\n");
-    gcry_mpi_dump(P->X); printf("\n");
+void show_p(point* P, char A){
+    printf("\n Look at this POINT %c\n", A);
+    gcry_mpi_dump(P->X); printf("_");
+    gcry_mpi_dump(P->X); printf("_");
     gcry_mpi_dump(P->X); printf("\n\n");
 }
 
@@ -194,7 +194,7 @@ point binaryMethod(const point * Point, gcry_mpi_t I){
 }
 
 void ifOnCurve(point * Point){
-    show_p(Point, "0");
+    show_p(Point, '0');
     //gcry_mpi_t X2 = sqred(Point.X, tt, p);
     gcry_mpi_t X = gcry_mpi_new(0);
     gcry_mpi_powm(X, Point->X, two, p);
@@ -219,7 +219,7 @@ void ifOnCurve(point * Point){
 }
 
 void ifIdentity(point * Point){
-    show_p(Point, "0");
+    show_p(Point, '0');
     if (Point->X == zero && Point->Y == one && Point->Z == zero) {
         printf("Test 2: +\n");
     }
@@ -229,7 +229,7 @@ void ifIdentity(point * Point){
 }
 
 void checkNeighbors(point Point){
-    show_p(&Point, "1");
+    show_p(&Point, '1');
     point P1;
     init_p(&P1);
 
@@ -237,7 +237,7 @@ void checkNeighbors(point Point){
     gcry_mpi_addm(tempo, q, one, p);
     P1 = binaryMethod(&Point, tempo);
             //binaryMethod(&Point, added(q, oo, p));
-    show_p(&P1, "2");
+    show_p(&P1, '2');
     if (P1.X == Point.X && P1.Y == Point.Y && P1.Z == Point.Z){
         printf("Test 3: +");
     }
@@ -255,7 +255,7 @@ void checkNeighbors(point Point){
     gcry_mpi_neg(tempoZ, Point.Z);
     gcry_mpi_mod(tempoX, tempoX, p);
     gcry_mpi_mod(tempoZ, tempoZ, p);
-    show_p(&P1, "3");
+    show_p(&P1, '3');
     if (P1.X == tempoX && P1.Y == Point.Y && P1.Z == tempoZ) {
         printf("+\n");
     }
@@ -279,8 +279,6 @@ void ifLinear(point * Point, gcry_mpi_t k1, gcry_mpi_t k2){
     gcry_mpi_t tempo = gcry_mpi_new(0);
     gcry_mpi_add(tempo, k1, k2);
     Point2 = binaryMethod(Point, tempo);
-    show_p(Point, "1");show_p(&Point1, "2");show_p(&Point2, "2");
-    (Point1.X == Point2.X &&
-     Point1.Y == Point2.Y &&
-     Point1.Z == Point2.Z) ? printf("Test 4 : +\n") : printf("Test 4 : -\n");
+    show_p(Point, '1');show_p(&Point1, '2');show_p(&Point2, '3');
+    (Point1.X == Point2.X && Point1.Y == Point2.Y && Point1.Z == Point2.Z) ? printf("Test 4 : +\n") : printf("Test 4 : -\n");
 }
