@@ -40,12 +40,12 @@ void set_params(){
     u = gcry_mpi_new(0);
     v = gcry_mpi_new(0);
 
-    gcry_mpi_scan(&p, GCRYMPI_FMT_HEX, "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFD97", 0, &scanned);
+    gcry_mpi_scan(&p, GCRYMPI_FMT_HEX, "115792089237316195423570985008687907853269984665640564039457584007913129639319", 0, &scanned);
     gcry_mpi_scan(&a, GCRYMPI_FMT_HEX, "1", 0, &scanned);
-    gcry_mpi_scan(&d, GCRYMPI_FMT_HEX, "605F6B7C183FA81578BC39CFAD518132B9DF62897009AF7E522C32D6DC7BFFB", 0, &scanned);
-    gcry_mpi_scan(&q, GCRYMPI_FMT_HEX, "400000000000000000000000000000000FD8CDDFC87B6635C115AF556C360C67", 0, &scanned);
+    gcry_mpi_scan(&d, GCRYMPI_FMT_HEX, "2724414110474605931834268501164757645998726878473076809432604223414351675387", 0, &scanned);
+    gcry_mpi_scan(&q, GCRYMPI_FMT_HEX, "28948022309329048855892746252171976963338560298092253442512153408785530358887", 0, &scanned);
     gcry_mpi_scan(&u, GCRYMPI_FMT_HEX, "D", 0, &scanned);
-    gcry_mpi_scan(&v, GCRYMPI_FMT_HEX, "60CA1E32AA475B348488C38FAB07649CE7EF8DBE87F22E81F92B2592DBA300E7", 0, &scanned);
+    gcry_mpi_scan(&v, GCRYMPI_FMT_HEX, "43779144989398987843428779166090436406934195821915183574454224403186176950503", 0, &scanned);
 
     two = gcry_mpi_new(0);
     one = gcry_mpi_new(0);
@@ -80,7 +80,7 @@ void release_memory()
  */
 void transform_p(point * Point){
     gcry_mpi_t tempo = gcry_mpi_new(0);
-    if (Point->Z != 0){
+    if (gcry_mpi_cmp(Point->Z, zero) != 0){
         //x = X/Z
         gcry_mpi_invm(tempo, Point->Z, p);
         gcry_mpi_mulm(Point->X, Point->X, tempo, p);
@@ -209,7 +209,7 @@ void ifOnCurve(point * Point){
     gcry_mpi_mulm(B, d, X, p);
     gcry_mpi_mulm(B, B, Y, p);
     gcry_mpi_addm(B, one, B, p);
-    if (A == B){
+    if ((gcry_mpi_cmp(A, B) == 0) ){
         printf("Test 1: +\n");
     }
     else{
@@ -220,7 +220,7 @@ void ifOnCurve(point * Point){
 
 void ifIdentity(point * Point){
     show_p(Point, '0');
-    if (Point->X == zero && Point->Y == one && Point->Z == zero) {
+    if ((gcry_mpi_cmp(Point->X, zero) == 0) && (gcry_mpi_cmp(Point->Y, one) == 0) && (gcry_mpi_cmp(Point->Z, zero) == 0)) {
         printf("Test 2: +\n");
     }
     else{
@@ -238,7 +238,7 @@ void checkNeighbors(point Point){
     P1 = binaryMethod(&Point, tempo);
             //binaryMethod(&Point, added(q, oo, p));
     show_p(&P1, '2');
-    if (P1.X == Point.X && P1.Y == Point.Y && P1.Z == Point.Z){
+    if ((gcry_mpi_cmp(P1.X, Point.X) == 0) && (gcry_mpi_cmp(P1.Y, Point.Y) == 0) && (gcry_mpi_cmp(P1.Z, Point.Z) == 0)){
         printf("Test 3: +");
     }
     else{
@@ -256,7 +256,7 @@ void checkNeighbors(point Point){
     gcry_mpi_mod(tempoX, tempoX, p);
     gcry_mpi_mod(tempoZ, tempoZ, p);
     show_p(&P1, '3');
-    if (P1.X == tempoX && P1.Y == Point.Y && P1.Z == tempoZ) {
+    if ((gcry_mpi_cmp(P1.X, tempoX) == 0) && (gcry_mpi_cmp(P1.Y, Point.Y) == 0)  && (gcry_mpi_cmp(P1.Z, tempoZ) == 0) ) {
         printf("+\n");
     }
     else {

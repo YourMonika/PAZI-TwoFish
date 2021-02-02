@@ -39,6 +39,7 @@ typedef struct{
     gcry_mpi_t Y;
     gcry_mpi_t Z;
 } point;
+void init_p(point * Point);
 
 void transform_p(point * Point); // project -> affine
 point add_p(const point * Point1, const point * Point2); // addition
