@@ -45,8 +45,8 @@ point add_p(const point * Point1, const point * Point2); // addition
 point double_p(const point * Point); // doubling season
 point binaryMethod(const point * Point, gcry_mpi_t I); // solving binary point
 
-void ifOnCurve(const point * Point);
-void ifIdentity(const point * Point);
+void ifOnCurve(point * Point);
+void ifIdentity(point * Point);
 void checkNeighbors(point Point);
 void ifLinear(point * Point, gcry_mpi_t k1, gcry_mpi_t k2);
 

@@ -9,23 +9,23 @@
 /*
  *                                     PARAMETERS
  */
-void init_p(point *p){
-    p->X = gcry_mpi_new(0);
-    p->Y = gcry_mpi_new(0);
-    p->Z = gcry_mpi_new(0);
+void init_p(point *P){
+    P->X = gcry_mpi_new(0);
+    P->Y = gcry_mpi_new(0);
+    P->Z = gcry_mpi_new(0);
 }
 
-void release_p(point* p){
-    gcry_mpi_release(p->X);
-    gcry_mpi_release(p->Y);
-    gcry_mpi_release(p->Z);
+void release_p(point* P){
+    gcry_mpi_release(P->X);
+    gcry_mpi_release(P->Y);
+    gcry_mpi_release(P->Z);
 }
 
-void show_p(point* p){
-    printf("\n Look at this POINT");
-    gcry_mpi_dump(p->X); printf("\n");
-    gcry_mpi_dump(p->X); printf("\n");
-    gcry_mpi_dump(p->X); printf("\n\n");
+void show_p(point* P, char A[2]){
+    printf("\n Look at this POINT %c", A[1]);
+    gcry_mpi_dump(P->X); printf("\n");
+    gcry_mpi_dump(P->X); printf("\n");
+    gcry_mpi_dump(P->X); printf("\n\n");
 }
 
 void set_params(){
@@ -193,7 +193,8 @@ point binaryMethod(const point * Point, gcry_mpi_t I){
 
 }
 
-void ifOnCurve(const point * Point){
+void ifOnCurve(point * Point){
+    show_p(Point, "0");
     //gcry_mpi_t X2 = sqred(Point.X, tt, p);
     gcry_mpi_t X = gcry_mpi_new(0);
     gcry_mpi_powm(X, Point->X, two, p);
@@ -208,15 +209,27 @@ void ifOnCurve(const point * Point){
     gcry_mpi_mulm(B, d, X, p);
     gcry_mpi_mulm(B, B, Y, p);
     gcry_mpi_addm(B, one, B, p);
-    (A == B) ? printf("Test 1: +\n") : printf("Test 1: -\n");
+    if (A == B){
+        printf("Test 1: +\n");
+    }
+    else{
+        printf("Test 1: -\n");
+    }
     gcry_mpi_release(X); gcry_mpi_release(Y);gcry_mpi_release(A);gcry_mpi_release(B);
 }
 
-void ifIdentity(const point * Point){
-    (Point->X == zero && Point->Y == one && Point->Z == zero) ? printf("Test 2: +\n") : printf("Test 2: -\n");
+void ifIdentity(point * Point){
+    show_p(Point, "0");
+    if (Point->X == zero && Point->Y == one && Point->Z == zero) {
+        printf("Test 2: +\n");
+    }
+    else{
+        printf("Test 2: -\n");
+    }
 }
 
 void checkNeighbors(point Point){
+    show_p(&Point, "1");
     point P1;
     init_p(&P1);
 
@@ -224,7 +237,13 @@ void checkNeighbors(point Point){
     gcry_mpi_addm(tempo, q, one, p);
     P1 = binaryMethod(&Point, tempo);
             //binaryMethod(&Point, added(q, oo, p));
-    (P1.X == Point.X && P1.Y == Point.Y && P1.Z == Point.Z) ? printf("Test 3: +") : printf("Test 3: -"); // [q+1]P==P
+    show_p(&P1, "2");
+    if (P1.X == Point.X && P1.Y == Point.Y && P1.Z == Point.Z){
+        printf("Test 3: +");
+    }
+    else{
+         printf("Test 3: -"); // [q+1]P==P
+    }
 
 
     gcry_mpi_subm(tempo, q, one, p);
@@ -236,7 +255,13 @@ void checkNeighbors(point Point){
     gcry_mpi_neg(tempoZ, Point.Z);
     gcry_mpi_mod(tempoX, tempoX, p);
     gcry_mpi_mod(tempoZ, tempoZ, p);
-    (P1.X == tempoX && P1.Y == Point.Y && P1.Z == tempoZ) ? printf("+\n") : printf("-\n");// [q-1]P==-P
+    show_p(&P1, "3");
+    if (P1.X == tempoX && P1.Y == Point.Y && P1.Z == tempoZ) {
+        printf("+\n");
+    }
+    else {
+        printf("-\n");
+    }// [q-1]P==-P
 }
 
 void ifLinear(point * Point, gcry_mpi_t k1, gcry_mpi_t k2){
@@ -252,6 +277,7 @@ void ifLinear(point * Point, gcry_mpi_t k1, gcry_mpi_t k2){
     gcry_mpi_t tempo = gcry_mpi_new(0);
     gcry_mpi_add(tempo, k1, k2);
     Point2 = binaryMethod(Point, tempo);
+    show_p(Point, "1");show_p(&Point1, "2");show_p(&Point2, "2");
     (Point1.X == Point2.X &&
      Point1.Y == Point2.Y &&
      Point1.Z == Point2.Z) ? printf("Test 4 : +\n") : printf("Test 4 : -\n");
