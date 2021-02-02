@@ -17,10 +17,10 @@ int main() {
     point j = {u, v, duo};
 
     check = binaryMethod(&j, q);
-    ifOnCurve(check);
-    ifIdentity(check);
+    ifOnCurve(&check);
+    ifIdentity(&check);
     checkNeighbors(check);
-    ifLinear(j, uno, duo);
+    ifLinear(&j, uno, duo);
 
     release_memory();
 
