@@ -1,8 +1,5 @@
 #include <stdio.h>
-#include "structures.h"
-#include <sys/types.h>
-
-#include <stdio.h>
+#include "structures.c"
 #include "structures.h"
 #include <sys/types.h>
 #include <gcrypt.h>
@@ -15,27 +12,28 @@ int main() {
     Point.X = u;
     Point.Y = v;
     Point.Z = one;
-    printf("point Point initialized\n");
+    printf("point \"Point\" created, initialized\n\n");
     point check;
     init_p(&check);
-    printf("point check initialized\n");
-
+    printf("point \"check\" created\n\n");
+    
     gcry_mpi_t rand1 = gcry_mpi_new(0);
     gcry_mpi_randomize(rand1, 256, GCRY_STRONG_RANDOM);
     gcry_mpi_t rand2 = gcry_mpi_new(0);
     gcry_mpi_randomize(rand2, 256, GCRY_STRONG_RANDOM);
-    printf("randoms _t initialized]\n");
+    printf("randoms mpi_t initialized\n\n");
 
     check = binaryMethod(&Point, &rand1);
-    printf("1st check initialized\n");
+    printf("point \"check\" initialized\n\n\n");
+    
     ifOnCurve(&check);
-
+    
     check = binaryMethod(&Point, &q);
     ifIdentity(&check);
 
     checkNeighbors(Point);
 
-    ifLinear(&Point, &rand1, &rand2);
+    ifLinear(&check, &rand1, &rand2);
 
 
     release_memory();
